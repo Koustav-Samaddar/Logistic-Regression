@@ -53,7 +53,7 @@ class BinaryLogisticRegression:
 		:param Y: Expected output vector of shape (1, m) corresponding to the current models output for each input vector passed where m can be 1
 		:return: Loss if A.shape == (1, 1) else Cost
 		"""
-		pass
+		return -(Y * np.log(A) + (1 - Y) * np.log(1 - A))
 
 	def _backward_prop(self, A):
 		"""
