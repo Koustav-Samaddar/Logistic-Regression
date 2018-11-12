@@ -35,7 +35,13 @@ class BinaryLogisticRegression:
 		:param X: Single or multiple input vector(s) of shape (x_n, m) where m can be 1
 		:return: A: Output vector of shape (1, m) corresponding to the current models output for each input vector passed where m can be 1
 		"""
-		pass
+		# Linear function computation
+		Z = np.dot(self.W.T, X)
+
+		# Activation function computation
+		A = 1 / (1 + np.exp(-Z))
+
+		return A
 
 	@staticmethod
 	def loss(A, Y):
