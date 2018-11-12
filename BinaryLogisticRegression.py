@@ -62,7 +62,12 @@ class BinaryLogisticRegression:
 		:param A: Output vector of shape (1, m) corresponding to the current models output for each input vector passed where m can be 1
 		:return: Dictionary with gradient descent results stored in it with keys - { dW, db }
 		"""
-		pass
+		# Calculating gradient descent
+		dZ = A - self.Y_train  # Should have shape (1, m)
+		dW = np.mean(self.X_train * dZ.T, axis=1, keepdims=True)  # Should have shape (x_n, 1)
+		db = np.mean(dZ, axis=1, keepdims=True)  # Should have shape (1, 1)
+
+		return { 'dW': dW, 'db': db }
 
 	def train(self, iterations=1000):
 		"""
