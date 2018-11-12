@@ -77,7 +77,17 @@ class BinaryLogisticRegression:
 		:param iterations: The number of iterations we want it to run for
 		:return: None
 		"""
-		pass
+		# Iterating `iterations` number of times
+		for i in range(iterations):
+			# Run forward prop to get current model output
+			A = self._forward_prop(X=self.X_train)
+
+			# Compute gradient descent values using back prop
+			grad_descent = self._backward_prop(A)
+
+			# Update current parameters
+			self.W -= self.alpha * grad_descent['dW']
+			self.b -= self.alpha * grad_descent['db']
 
 	def predict(self, X, Y=None):
 		"""
@@ -88,4 +98,9 @@ class BinaryLogisticRegression:
 		:param Y: Output vector of size (x_n, m) where m can be 1 (optional)
 		:return: Prediction vector on X if y is not provided, else accuracy vector
 		"""
-		pass
+		# Compute y_hat (A)
+		if Y is None:
+			return np.where(self._forward_prop(X) > 0.5, 1, 0)
+		# Compute cost
+		else:
+			return np.abs(self._forward_prop(X) - Y) / Y * 100
