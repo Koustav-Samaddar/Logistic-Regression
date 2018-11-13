@@ -23,7 +23,7 @@ class BinaryLogisticRegression:
 		self.b      = params['b']
 		self.alpha  = params['alpha']
 
-	def __init__(self, X_train, alpha):
+	def __init__(self, x_n, alpha):
 		"""
 		This constructor assigns the hyper parameters based on the training data and other arguments.
 
@@ -31,7 +31,7 @@ class BinaryLogisticRegression:
 		:param alpha: Learning rate of this classifier
 		"""
 		# Getting relevant dimension sizes
-		self.x_n = X_train.shape[0]
+		self.x_n = x_n
 
 		# Initialising parameters
 		self.W = np.zeros(self.x_n, 1)
