@@ -5,7 +5,7 @@ import pickle
 
 import numpy as np
 
-from main import time_to_str
+from commons import time_to_str
 
 # noinspection PyRedeclaration
 class BinaryLogisticRegression:
