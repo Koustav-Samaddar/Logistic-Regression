@@ -10,22 +10,6 @@ from commons import time_to_str
 # noinspection PyRedeclaration
 class BinaryLogisticRegression:
 
-	def __init__(self, file_path):
-		"""
-		This constructor loads a pre-trained neural network from the provided save file.
-
-		:param file_path: Path to the file
-		"""
-		# Reading saved parameters from given file
-		with open(file_path, 'r') as f:
-			params = pickle.load(f)
-
-		# Storing parameters read from file into class member variables
-		self.x_n    = params['x_n']
-		self.W      = params['W']
-		self.b      = params['b']
-		self.alpha  = params['alpha']
-
 	def __init__(self, x_n, alpha):
 		"""
 		This constructor assigns the hyper parameters based on the training data and other arguments.
@@ -42,6 +26,24 @@ class BinaryLogisticRegression:
 
 		# Setting hyper-parameters
 		self.alpha = alpha
+
+	@staticmethod
+	def load_BLR(file_path):
+		"""
+		This method loads a pre-trained neural network from the provided save file.
+
+		:param file_path: Path to the file
+		"""
+		# Reading saved parameters from given file
+		with open(file_path, 'rb') as f:
+			params = pickle.load(f)
+
+		# Storing parameters read from file into new object member variables
+		this = BinaryLogisticRegression(params['x_n'], params['alpha'])
+		this.W = params['W']
+		this.b = params['b']
+
+		return this
 
 	def _forward_prop(self, X):
 		"""
@@ -165,14 +167,14 @@ class BinaryLogisticRegression:
 		:param Y: Output vector of size (x_n, m) where m can be 1 (optional)
 		:return: Prediction vector on X if y is not provided, else accuracy vector
 		"""
-		# Compute y_hat (A)
+		# Compute Y_hat (A)
 		if Y is None:
 			return np.where(self._forward_prop(X) > 0.5, 1, 0)
-		# Compute cost
+		# Compute L1 cost
 		else:
 			return np.abs(self._forward_prop(X) - Y) / Y * 100
 
-	def save_params(self, file_name, dir_path='F:\\Neural_Networks\\'):
+	def save_BLR(self, file_name, dir_path='F:\\Neural_Networks\\'):
 		"""
 		This method saves the current neural network's parameters into the provided file.
 
