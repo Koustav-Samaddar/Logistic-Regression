@@ -27,7 +27,7 @@ class BinaryLogisticRegression:
 		"""
 		This constructor assigns the hyper parameters based on the training data and other arguments.
 
-		:param X_train: Input training vector of size (x_n, m)
+		:param x_n: Input size of a single input vector
 		:param alpha: Learning rate of this classifier
 		"""
 		# Getting relevant dimension sizes
