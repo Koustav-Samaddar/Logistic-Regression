@@ -1,8 +1,11 @@
 
 import os
+import time
 import pickle
+
 import numpy as np
 
+from commons import time_to_str
 
 # noinspection PyRedeclaration
 class BinaryLogisticRegression:
@@ -34,7 +37,7 @@ class BinaryLogisticRegression:
 		self.x_n = x_n
 
 		# Initialising parameters
-		self.W = np.zeros(self.x_n, 1)
+		self.W = np.zeros((self.x_n, 1))
 		self.b = 0
 
 		# Setting hyper-parameters
@@ -79,12 +82,12 @@ class BinaryLogisticRegression:
 		"""
 		# Calculating gradient descent
 		dZ = A - Y  # Should have shape (1, m)
-		dW = np.mean(X * dZ.T, axis=1, keepdims=True)  # Should have shape (x_n, 1)
+		dW = np.mean(np.dot(X, dZ.T), axis=1, keepdims=True)  # Should have shape (x_n, 1)
 		db = np.mean(dZ, axis=1, keepdims=True)  # Should have shape (1, 1)
 
 		return { 'dW': dW, 'db': db }
 
-	def train(self, X_train, Y_train, iterations=1000):
+	def train(self, X_train, Y_train, iterations=1000, print_logs=False):
 		"""
 		This method trains this model by running `iteration` number of forward and backward propagation.
 		The model must be trained before trying to use it to make predictions.
@@ -94,17 +97,64 @@ class BinaryLogisticRegression:
 		:param iterations: The number of iterations we want it to run for
 		:return: None
 		"""
+		# Initialising logging variables
+		is_first_pass = True        # Flag to determine whether or not this is the first pass
+		fprop_times = []
+		bprop_times = []
+		pass_times  = []
+
+		if print_logs:
+			print("Input vector size (x_n) : {}".format(self.x_n))
+			print("# of training sets  (m) : {}".format(Y_train.shape[1]))
+			print()
+
 		# Iterating `iterations` number of times
 		for i in range(iterations):
 			# Run forward prop to get current model output
+			tic = time.time()
 			A = self._forward_prop(X=X_train)
+			toc = time.time()
+			fprop_time = toc - tic
 
 			# Compute gradient descent values using back prop
+			tic = time.time()
 			grad_descent = self._backward_prop(X_train, A, Y_train)
+			toc = time.time()
+			bprop_time = toc - tic
 
 			# Update current parameters
+			tic = time.time()
 			self.W -= self.alpha * grad_descent['dW']
 			self.b -= self.alpha * grad_descent['db']
+			toc = time.time()
+			pass_time = fprop_time + bprop_time + (toc - tic)
+
+			# Logging time taken by first pass
+			if is_first_pass:
+				if print_logs:
+					print("Pass #1: [ Forward Prop: {0:s}, Backward Prop: {1:s}, Total Pass: {2:s} ]".format(
+						*list(map(time_to_str, [fprop_time, bprop_time, pass_time]))))
+					print()
+				is_first_pass = False       # Removing flag
+
+			# Adding times to their respective lists
+			fprop_times.append(fprop_time)
+			bprop_times.append(bprop_time)
+			pass_times.append(pass_time)
+
+		# Logging total training time taken
+		if print_logs:
+			mean = lambda x: sum(x) / len(x)
+			# Print total times
+			print("Training Total: [ Forward Prop: {0:s}, Backward Prop: {1:s}, Total Pass: {2:s} ]".format(
+				*list(map(time_to_str, map(sum, [fprop_times, bprop_times, pass_times])))))
+			# Print average times
+			print("Training Average: [ Forward Prop: {0:s}, Backward Prop: {1:s}, Total Pass: {2:s} ]".format(
+				*list(map(time_to_str, map(mean, [fprop_times, bprop_times, pass_times])))))
+			# Print maximum times
+			print("Training Max: [ Forward Prop: {0:s}, Backward Prop: {1:s}, Total Pass: {2:s} ]".format(
+				*list(map(time_to_str, map(max, [fprop_times, bprop_times, pass_times])))))
+			print()
 
 	def predict(self, X, Y=None):
 		"""
@@ -137,5 +187,5 @@ class BinaryLogisticRegression:
 			'alpha':    self.alpha
 		}
 
-		with open(os.path.join(dir_path, file_name + '.pck')) as f:
+		with open(os.path.join(dir_path, file_name + '.pck'), 'wb+') as f:
 			pickle.dump(params, f, protocol=pickle.HIGHEST_PROTOCOL)

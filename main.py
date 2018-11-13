@@ -1,6 +1,7 @@
 
 import os
 import glob
+import warnings
 
 import numpy as np
 
@@ -8,6 +9,7 @@ from PIL import Image
 from functools import reduce
 
 from BinaryLogisticRegression import BinaryLogisticRegression
+
 
 def eagle_falcon_bin_classifier():
 	"""
@@ -32,14 +34,16 @@ def eagle_falcon_bin_classifier():
 	# Iterating over all training eagles
 	for imfile in glob.glob(os.path.join(train_set_dir, 'Eagle_128', '*.png')):
 		# Opening the image file
-		im = Image.open(imfile)
+		with warnings.catch_warnings():
+			warnings.filterwarnings(action="ignore", message="Palette images.*")
+			im = Image.open(imfile).convert('RGB')
 
 		# Converting image to flattened numpy array
 		im_arr = np.array(im)
 		im_arr = im_arr.reshape((reduce(lambda x, y: x * y, im_arr.shape), 1))
 
 		# Adding expected output at the bottom row
-		im_arr = np.concatenate((im_arr, np.array([[1]], dtype=np.uint8)))
+		im_arr = np.concatenate((im_arr, np.ones((1, 1), dtype=np.uint8)))
 
 		# Adding new training vector to V_train
 		if V_train is None:
@@ -53,14 +57,16 @@ def eagle_falcon_bin_classifier():
 	# Iterating over all training falcons
 	for imfile in glob.glob(os.path.join(train_set_dir, 'Falcon_128', '*.png')):
 		# Opening the image file
-		im = Image.open(imfile)
+		with warnings.catch_warnings():
+			warnings.filterwarnings(action="ignore", message="Palette images.*")
+			im = Image.open(imfile).convert('RGB')
 
 		# Converting image to flattened numpy array
 		im_arr = np.array(im)
 		im_arr = im_arr.reshape((reduce(lambda x, y: x * y, im_arr.shape), 1))
 
 		# Adding expected output at the bottom row
-		im_arr = np.concatenate((im_arr, np.array([[0]], dtype=np.uint8)))
+		im_arr = np.concatenate((im_arr, np.zeros((1, 1), dtype=np.uint8)))
 
 		# Adding new training vector to V_train
 		V_train = np.concatenate((V_train, im_arr), axis=1)
@@ -76,6 +82,12 @@ def eagle_falcon_bin_classifier():
 	# Creating a new BLR
 	classifier = BinaryLogisticRegression(x_n, 0.05)
 
+	# Train the new BLR
+	classifier.train(X_train, Y_train, print_logs=True)
+
+	# Save the new BLR
+	classifier.save_params('eagle-v-falcon')
+
+
 if __name__ == '__main__':
-	print("Hello Shallow Learning!")
 	eagle_falcon_bin_classifier()
