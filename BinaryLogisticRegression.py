@@ -37,7 +37,7 @@ class BinaryLogisticRegression:
 		self.x_n = x_n
 
 		# Initialising parameters
-		self.W = np.zeros(self.x_n, 1)
+		self.W = np.zeros((self.x_n, 1))
 		self.b = 0
 
 		# Setting hyper-parameters
@@ -82,7 +82,7 @@ class BinaryLogisticRegression:
 		"""
 		# Calculating gradient descent
 		dZ = A - Y  # Should have shape (1, m)
-		dW = np.mean(X * dZ.T, axis=1, keepdims=True)  # Should have shape (x_n, 1)
+		dW = np.mean(np.dot(X, dZ.T), axis=1, keepdims=True)  # Should have shape (x_n, 1)
 		db = np.mean(dZ, axis=1, keepdims=True)  # Should have shape (1, 1)
 
 		return { 'dW': dW, 'db': db }
@@ -104,8 +104,8 @@ class BinaryLogisticRegression:
 		pass_times  = []
 
 		if print_logs:
-			print("Input vector size (x_n): {}", self.x_n)
-			print("Number of training sets (m): {}", Y_train.shape[1])
+			print("Input vector size (x_n) : {}".format(self.x_n))
+			print("# of training sets  (m) : {}".format(Y_train.shape[1]))
 			print()
 
 		# Iterating `iterations` number of times
@@ -132,7 +132,7 @@ class BinaryLogisticRegression:
 			# Logging time taken by first pass
 			if is_first_pass:
 				if print_logs:
-					print("Pass #1: { Forward Prop: {0:s}, Backward Prop: {1:s}, Total Pass: {2:s} }".format(
+					print("Pass #1: [ Forward Prop: {0:s}, Backward Prop: {1:s}, Total Pass: {2:s} ]".format(
 						*list(map(time_to_str, [fprop_time, bprop_time, pass_time]))))
 					print()
 				is_first_pass = False       # Removing flag
@@ -146,13 +146,13 @@ class BinaryLogisticRegression:
 		if print_logs:
 			mean = lambda x: sum(x) / len(x)
 			# Print total times
-			print("Training Total: { Forward Prop: {0:.3f}s, Backward Prop: {1:.3f}s, Total Pass: {2:.3f}s }".format(
+			print("Training Total: [ Forward Prop: {0:s}, Backward Prop: {1:s}, Total Pass: {2:s} ]".format(
 				*list(map(time_to_str, map(sum, [fprop_times, bprop_times, pass_times])))))
 			# Print average times
-			print("Training Average: { Forward Prop: {0:.3f}s, Backward Prop: {1:.3f}s, Total Pass: {2:.3f}s }".format(
+			print("Training Average: [ Forward Prop: {0:s}, Backward Prop: {1:s}, Total Pass: {2:s} ]".format(
 				*list(map(time_to_str, map(mean, [fprop_times, bprop_times, pass_times])))))
 			# Print maximum times
-			print("Training Max: { Forward Prop: {0:.3f}s, Backward Prop: {1:.3f}s, Total Pass: {2:.3f}s }".format(
+			print("Training Max: [ Forward Prop: {0:s}, Backward Prop: {1:s}, Total Pass: {2:s} ]".format(
 				*list(map(time_to_str, map(max, [fprop_times, bprop_times, pass_times])))))
 			print()
 
