@@ -187,5 +187,5 @@ class BinaryLogisticRegression:
 			'alpha':    self.alpha
 		}
 
-		with open(os.path.join(dir_path, file_name + '.pck')) as f:
+		with open(os.path.join(dir_path, file_name + '.pck'), 'wb+') as f:
 			pickle.dump(params, f, protocol=pickle.HIGHEST_PROTOCOL)
