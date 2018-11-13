@@ -9,6 +9,14 @@ from functools import reduce
 
 from BinaryLogisticRegression import BinaryLogisticRegression
 
+
+def time_to_str(t):
+	if t > 3600:
+		return "{0:d}h {1:d}m {2:.3f}s".format(t // 3600, (t % 3600) // 60, t % 60)
+	else:
+		return "{0:d}m {1:.3f}s".format(t // 60, t % 60)
+
+
 def eagle_falcon_bin_classifier():
 	"""
 	In this function we will train a binary classifier using Logistic Regression to differentiate between a Falcon and an Eagle
@@ -76,6 +84,12 @@ def eagle_falcon_bin_classifier():
 	# Creating a new BLR
 	classifier = BinaryLogisticRegression(x_n, 0.05)
 
+	# Train the new BLR
+	classifier.train(X_train, Y_train, print_logs=True)
+
+	# Save the new BLR
+	classifier.save_params('eagle-v-falcon')
+
+
 if __name__ == '__main__':
-	print("Hello Shallow Learning!")
 	eagle_falcon_bin_classifier()
