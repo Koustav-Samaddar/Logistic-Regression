@@ -97,6 +97,7 @@ class BinaryLogisticRegression:
 		:param X_train: Input training vector of size (x_n, m)
 		:param Y_train: Output training vector of size (1, m)
 		:param iterations: The number of iterations we want it to run for
+		:param print_logs: boolean to select whether or not to print log in stdout
 		:return: None
 		"""
 		# Initialising logging variables
