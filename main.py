@@ -11,13 +11,16 @@ from functools import reduce
 from BinaryLogisticRegression import BinaryLogisticRegression
 
 
-def create_eagle_falcon_bin_classifier():
+def create_bin_classifier(one_class, zero_class, save_name):
 	"""
-	In this function we will train a binary classifier using Logistic Regression to differentiate between a Falcon and an Eagle
+	This function trains a binary classifier using Logistic Regression to differentiate between a two types of images.
 
-	Eagle -> 1
-	Falcon -> 0
+	one_class -> 1
+	zero_class -> 0
 
+	:param one_class: directory path to training images with Y=1
+	:param zero_class: directory path to training images with Y=0
+	:param save_name: name of file to save the trained NN to
 	:return: None
 	"""
 	# Setting up test and train set directories
@@ -32,7 +35,7 @@ def create_eagle_falcon_bin_classifier():
 	m = 0
 
 	# Iterating over all training eagles
-	for imfile in glob.glob(os.path.join(train_set_dir, 'Eagle_128', '*.png')):
+	for imfile in glob.glob(os.path.join(train_set_dir, one_class, '*.png')):
 		# Opening the image file
 		with warnings.catch_warnings():
 			warnings.filterwarnings(action="ignore", message="Palette images.*")
@@ -51,11 +54,11 @@ def create_eagle_falcon_bin_classifier():
 		else:
 			V_train = np.concatenate((V_train, im_arr), axis=1)
 
-		# Update number of train cases for eagles
+		# Update number of train cases for one_class
 		m += 1
 
 	# Iterating over all training falcons
-	for imfile in glob.glob(os.path.join(train_set_dir, 'Falcon_128', '*.png')):
+	for imfile in glob.glob(os.path.join(train_set_dir, zero_class, '*.png')):
 		# Opening the image file
 		with warnings.catch_warnings():
 			warnings.filterwarnings(action="ignore", message="Palette images.*")
@@ -71,7 +74,7 @@ def create_eagle_falcon_bin_classifier():
 		# Adding new training vector to V_train
 		V_train = np.concatenate((V_train, im_arr), axis=1)
 
-		# Update number of train cases for eagles
+		# Update number of train cases for zero_class
 		m += 1
 
 	# Creating training set variables
@@ -83,15 +86,26 @@ def create_eagle_falcon_bin_classifier():
 	classifier = BinaryLogisticRegression(x_n, 0.05)
 
 	# Train the new BLR
-	classifier.train(X_train, Y_train, iterations=5000, print_logs=True)
+	classifier.train(X_train, Y_train, iterations=10000, print_logs=True)
 
 	# Save the new BLR
-	classifier.save_BLR('eagle-v-falcon')
+	classifier.save_BLR(save_name)
 
 
-def test_eagle_falcon_bin_classifier():
+def test_bin_classifier(one_class, zero_class, save_name):
+	"""
+	This function tests a binary classifier ability to differentiate between two types of images.
+
+	one_class -> 1
+	zero_class -> 0
+
+	:param one_class:
+	:param zero_class:
+	:param save_name:
+	:return:
+	"""
 	# Load BLR from save state
-	classifier = BinaryLogisticRegression.load_BLR('F:\\Neural_Networks\\eagle-v-falcon.pck')
+	classifier = BinaryLogisticRegression.load_BLR(save_name)
 
 	# Setting up test and train set directories
 	test_set_dir = "F:\\Testing_Sets"
@@ -104,7 +118,7 @@ def test_eagle_falcon_bin_classifier():
 	m = 0
 
 	# Iterating over all training eagles
-	for imfile in glob.glob(os.path.join(test_set_dir, 'Eagle_128', '*.png')):
+	for imfile in glob.glob(os.path.join(test_set_dir, one_class, '*.png')):
 		# Opening the image file
 		with warnings.catch_warnings():
 			warnings.filterwarnings(action="ignore", message="Palette images.*")
@@ -127,7 +141,7 @@ def test_eagle_falcon_bin_classifier():
 		m += 1
 
 	# Iterating over all training falcons
-	for imfile in glob.glob(os.path.join(test_set_dir, 'Falcon_128', '*.png')):
+	for imfile in glob.glob(os.path.join(test_set_dir, zero_class, '*.png')):
 		# Opening the image file
 		with warnings.catch_warnings():
 			warnings.filterwarnings(action="ignore", message="Palette images.*")
@@ -166,5 +180,5 @@ def test_eagle_falcon_bin_classifier():
 
 
 if __name__ == '__main__':
-	# create_eagle_falcon_bin_classifier()
-	test_eagle_falcon_bin_classifier()
+	# create_bin_classifier('Eagle_128', 'Falcon_128', 'eagle-v-falcon')
+	test_bin_classifier('Eagle_128', 'Falcon_128', 'F:\\Neural_Networks\\eagle-v-falcon.pck')
